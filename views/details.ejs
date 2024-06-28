@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timetable</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <style>
+        .timetable-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .timetable {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+        }
+
+        .timetable th,
+        .timetable td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            border-right: 1px solid #ddd;
+        }
+
+        .timetable th {
+            background-color: #f2f2f2;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .timetable td {
+            min-width: 150px;
+        }
+
+        .timetable .day-column {
+            min-width: 100px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .timetable .time-column {
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+    <body>
+
+        <%- include('nav.ejs') %>
+
+
+            <!-- Timetable Container -->
+            <div class="container timetable-container">
+                <h1 class="text-center mt-4">Time Table</h1>
+                <div class="table-responsive">
+                    <table class="table table-bordered timetable">
+                        <thead>
+                            <tr>
+                                <th class="time-column">Time</th>
+                                <th class="day-column">Monday</th>
+                                <th class="day-column">Tuesday</th>
+                                <th class="day-column">Wednesday</th>
+                                <th class="day-column">Thursday</th>
+                                <th class="day-column">Friday</th>
+                            </tr>
+                        </thead>
+                        <tbody id="timetable-body">
+                            <!-- Rows will be dynamically populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Bootstrap 5 JS and dependencies (jQuery slim version) -->
+            <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"
+                integrity="sha384-g7V009/+YjV4Q8hLvJ+WYDjSnG1qBBS6Fe1PGn+G8C3Qy2D5+qw+hC4NhicgHrV"
+                crossorigin="anonymous"></script>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"
+                integrity="sha384-3q1q83mLtvOMTOQ8CkRmzcgoDf2JGubwI7x9wBSRVGtA/p8tQyG1u5eMxzhvpPf1"
+                crossorigin="anonymous"></script>
+
+            <script>
+                let backendData = `<%- JSON.stringify(data) %>`;
+
+                backendData = JSON.parse(backendData);
+
+                // Function to update timetable data based on backend data
+                const updateTimetable = () => {
+                    const daysOfWeek = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+                    const timetableBody = document.getElementById('timetable-body');
+                    const timetableStructure = {};
+
+                    // Initialize timetable structure
+                    backendData.forEach(item => {
+                        const { startTime, endTime, dayOfWeek, classId, teacherId } = item;
+                        const day = dayOfWeek.toLowerCase();
+                        const timeSlotKey = `${startTime}-${endTime}`; // Unique key for time slot
+                        console.log(timeSlotKey)
+
+                        // Ensure the time slot object exists
+                        if (!timetableStructure[timeSlotKey]) {
+                            let key = timetableStructure[timeSlotKey] = {};
+                            console.log(key)
+                        }
+
+                        // Ensure the day object exists within the time slot
+                        if (!timetableStructure[timeSlotKey][day]) {
+                            timetableStructure[timeSlotKey][day] = `${classId.name}, ${teacherId.name}`;
+                        } else {
+                            timetableStructure[timeSlotKey][day] += `<br>${classId.name}, ${teacherId.name}`;
+                        }
+                    });
+
+                    // Generate table rows from timetable structure
+                    Object.keys(timetableStructure).forEach(timeSlotKey => {
+                        const [startTime, endTime] = timeSlotKey.split('-');
+                        const timeSlotRow = document.createElement('tr');
+                        timeSlotRow.innerHTML = `<td class="time-column">${startTime} - ${endTime}</td>`;
+
+                        daysOfWeek.forEach(day => {
+                            const cell = document.createElement('td');
+                            cell.classList.add('col');
+                            cell.innerHTML = timetableStructure[timeSlotKey][day] || '';
+                            timeSlotRow.appendChild(cell);
+                        });
+
+                        timetableBody.appendChild(timeSlotRow);
+                    });
+                };
+
+                // Call the updateTimetable function after the DOM is fully loaded
+                document.addEventListener('DOMContentLoaded', updateTimetable);
+            </script>
+
+    </body>
+
+</html>
