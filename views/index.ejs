@@ -42,6 +42,24 @@
 
     <!-- Bootstrap JS -->
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+
+        const verifyToken = () => {
+            const token = localStorage.getItem('token');
+            if (token) {
+                return true
+            } else {
+                return false;
+            }
+        }
+
+        if (!verifyToken()) {
+            window.location.href = '/login';
+        }
+
+
+    </script>
 </body>
 
 </html>

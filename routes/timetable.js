@@ -2,6 +2,8 @@ const express = require('express')
 const router = express.Router();
 const { generateTimeTable } = require('../services/QueryServices')
 const { getTimeTable } = require('../services/QueryServices.js')
+const { verifyToken } = require('../middlewares/verifyToken')
+
 
 
 router.get('/', async (req, res) => {

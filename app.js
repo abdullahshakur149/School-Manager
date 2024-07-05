@@ -1,13 +1,17 @@
 const express = require('express')
 const app = express();
 const connectDB = require('./database/db')
-const upload = require('./middlewares/fileupload'); // Adjusted import
+const upload = require('./middlewares/fileupload');
+const jwt = require('jsonwebtoken');
+const dotenv = require('dotenv')
+
 
 
 
 
 // database
 connectDB();
+dotenv.config();
 
 // middlewares
 app.use(express.urlencoded({ extended: true }));
