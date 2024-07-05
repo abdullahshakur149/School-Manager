@@ -1,6 +1,8 @@
 const express = require('express')
 const app = express();
 const connectDB = require('./database/db')
+const upload = require('./middlewares/fileupload'); // Adjusted import
+
 
 
 
@@ -13,11 +15,14 @@ app.use(express.json());
 app.use(express.static('public'))
 app.set('view engine', 'ejs')
 
+
+
+
 // routes
 app.use('/', require('./routes/index'))
 app.use('/timetable', require('./routes/TimeTable'))
 app.use('/api', require('./routes/api'))
-// app.use('/auth', require('./routes/auth'))
+app.use('/', require('./routes/auth'))
 
 
 const port = process.env.PORT || 3000;
